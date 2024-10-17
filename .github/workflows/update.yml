@@ -1,0 +1,28 @@
+name: Update respository
+on:
+  workflow_dispatch:
+  repository_dispatch:
+  schedule:
+    - cron:  '1 */6 * * *'
+jobs:
+  build:
+    runs-on: ubicloud
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download assets
+      run: |
+        curl https://dangerous.domains/list.txt --output ./list.txt
+        curl https://dangerous.domains/list.json --output ./list.json
+        curl https://dangerous.domains/list.yaml --output ./list.yml
+      working-directory: ${{ github.workspace }}
+    - name: Create hosts file
+      run: |
+        cat ./list.txt | sed 's/^/0.0.0.0 /g' > ./hosts
+      working-directory: ${{ github.workspace }}
+    - name: Commit and push
+      run: |
+        git config --global user.name "${{ github.actor }}"
+        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+        git add .
+        git commit -m "Updating data for $(date +"%s")"
+        git push
