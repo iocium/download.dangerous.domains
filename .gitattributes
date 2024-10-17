@@ -1,0 +1,2 @@
+list.* filter=lfs diff=lfs merge=lfs -text
+hosts filter=lfs diff=lfs merge=lfs -text
